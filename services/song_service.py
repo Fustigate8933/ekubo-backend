@@ -4,6 +4,7 @@ import httpx
 from dotenv import load_dotenv
 from fastapi import HTTPException
 
+# Load environment variables
 load_dotenv()
 
 LRCLIB_API_BASE_URL = "https://lrclib.net/api"
@@ -54,25 +55,32 @@ async def search_spotify_song(track_name: str, artist_name: str, track_limit: in
     headers = {
         "Authorization": f"Bearer {access_token}",
     }
-    params = {
-        "q": f'track:"{track_name}" artist:"{artist_name}"',
-        "type": "track",
-        "limit": track_limit,
-    }
-
+    
+    # Try multiple search strategies
+    search_queries = [
+        f'track:"{track_name}" artist:"{artist_name}"',  # Exact match
+        f'"{track_name}" "{artist_name}"',  # Phrase search
+        f'{track_name} {artist_name}',  # Simple search
+        f'track:{track_name}',  # Track only
+    ]
+    
     async with httpx.AsyncClient() as client:
-        response = await client.get(url, headers=headers, params=params)
-        if response.status_code != 200:
-            raise HTTPException(
-                status_code=response.status_code,
-                detail="Failed to search Spotify for the song.",
-            )
-        results = response.json()
-        tracks = results.get("tracks", {}).get("items", [])
-        if not tracks:
-            raise HTTPException(status_code=404, detail="Song not found on Spotify.")
+        for query in search_queries:
+            params = {
+                "q": query,
+                "type": "track",
+                "limit": track_limit,
+            }
+            
+            response = await client.get(url, headers=headers, params=params)
+            if response.status_code == 200:
+                results = response.json()
+                tracks = results.get("tracks", {}).get("items", [])
+                if tracks:
+                    return tracks
         
-        return tracks
+        # If all searches fail, return empty list
+        return []
 
 
 async def generate_spotify_tracks(track_name: str, artist_name: str, track_limit: int = 1):

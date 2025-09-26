@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import songs, auth
+from routers import songs, auth, songs_new, lyrics, matched, user_library
 
-app = FastAPI()
+app = FastAPI(
+    title="Ekubo API",
+    description="Japanese listening practice API",
+    version="1.0.0"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -12,5 +16,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(songs.router, prefix="/songs", tags=["Songs"])
+# Legacy routes (for backward compatibility)
+app.include_router(songs.router, prefix="/songs", tags=["Songs (Legacy)"])
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+
+# New enhanced routes
+app.include_router(songs_new.router, prefix="/api/songs", tags=["Songs"])
+app.include_router(lyrics.router, prefix="/api/lyrics", tags=["Lyrics"])
+app.include_router(matched.router, prefix="/api/matched", tags=["Matched Songs"])
+app.include_router(user_library.router, prefix="/api/library", tags=["User Library"])
