@@ -34,7 +34,7 @@ class UserLibraryResponse(UserLibraryBase):
 
 class UserLibraryWithDetails(UserLibraryResponse):
     """Schema for user library with full details."""
-    matched_song: Optional["MatchedResponse"] = None
+    matched_song: Optional["MatchedWithDetails"] = None
     user: Optional["UserResponse"] = None
 
 
@@ -44,7 +44,7 @@ class UserLibraryInDB(UserLibraryResponse):
 
 
 # Import here to avoid circular imports
-from models.matched import MatchedResponse
+from models.matched import MatchedResponse, MatchedWithDetails
 from models.user import UserResponse
 
 # Update forward references

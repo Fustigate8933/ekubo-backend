@@ -12,6 +12,7 @@ class SongBase(BaseModel):
     title: Optional[str] = None
     artist: Optional[str] = None
     album: Optional[str] = None
+    album_image_url: Optional[str] = None
     duration: Optional[int] = None
     spotify_id: Optional[str] = None
 
