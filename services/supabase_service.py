@@ -138,6 +138,25 @@ class SupabaseService:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to search records: {str(e)}")
 
+    async def search_with_pattern(
+        self,
+        table: str,
+        field: str,
+        query: str,
+        skip: int = 0,
+        limit: int = 100
+    ) -> List[Dict[str, Any]]:
+        try:
+            params = {
+                "order": "id",
+                "offset": skip,
+                "limit": limit,
+                field: f"ilike.*{query}*"
+            }
+            result = await self._make_request("GET", table, params=params)
+            return result or []
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to search records with pattern: {str(e)}")
 
 # Create global instance
 supabase_service = SupabaseService()

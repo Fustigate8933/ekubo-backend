@@ -10,18 +10,32 @@ from services.supabase_service import supabase_service
 router = APIRouter()
 
 
-@router.get("/", response_model=List[MatchedResponse])
+@router.get("/", response_model=List[MatchedWithDetails])
 async def get_matched_songs(
+    q: str | None = Query(
+        None,
+        description="Search query for song title (partial match)",
+    ),
     skip: int = Query(0, ge=0, description="Number of matched songs to skip"),
     limit: int = Query(100, ge=1, le=1000, description="Number of matched songs to return")
 ):
-    """Get all matched songs with pagination."""
+    """Get all matched songs with pagination and optional title search."""
     try:
-        matched_songs = await supabase_service.get_multi("matched", skip=skip, limit=limit)
-        return matched_songs
+        matched_results = []
+        if q:
+            songs = await supabase_service.search_with_pattern("songs", "title", q, skip, limit)
+            for song in songs:
+                matches = await supabase_service.search("matched", {"song_id": song["id"]})
+                for match in matches:
+                    match_with_details = match.copy()
+                    match_with_details["song"] = song
+                    if match.get("lyrics_id"):
+                        lyrics = await supabase_service.get("lyrics", match["lyrics_id"])
+                        match_with_details["lyrics"] = lyrics
+                    matched_results.append(match_with_details)
+        return matched_results
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch matched songs: {str(e)}")
-
 
 @router.get("/{matched_id}", response_model=MatchedWithDetails)
 async def get_matched_song(matched_id: int):
