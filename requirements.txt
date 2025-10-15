@@ -1,17 +1,38 @@
-# FastAPI and ASGI server
-fastapi==0.115.6
-uvicorn==0.34.0
+# Core Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.23.0
+pydantic>=2.4.0
+pydantic[email]
 
-# HTTP client for external API calls
-httpx==0.28.1
+# Database
+supabase>=2.0.0
+asyncpg>=0.28.0  # PostgreSQL async driver
 
-# Authentication and security
-bcrypt==4.3.0
-PyJWT==2.10.1
+# HTTP Client
+httpx>=0.25.0  # Async HTTP client for API calls
 
-# Data validation and serialization
-pydantic==2.10.4
-pydantic-settings==2.8.1
+# Authentication & Security
+python-jose>=3.3.0  # JWT token handling
+passlib>=1.7.4  # Password hashing
+python-multipart>=0.0.6  # Form data processing
+bcrypt>=4.0.1  # Password hashing
 
-# Environment management
-python-dotenv==1.0.0
+# Caching
+redis>=5.0.0  # For caching layer
+
+# Resilience Patterns
+backoff>=2.2.1  # For retry logic
+pybreaker>=1.0.2  # For circuit breaker pattern
+
+# Rate Limiting
+slowapi>=0.1.8  # For API rate limiting
+
+# Monitoring & Observability
+sentry-sdk>=1.32.0  # Error tracking
+structlog>=23.2.0  # Structured logging
+prometheus-fastapi-instrumentator>=6.1.0  # Metrics
+
+# Utilities
+python-dotenv>=1.0.0  # Environment variable management
+tenacity>=8.2.3  # Retry library with async support
+aiofiles>=23.2.1  # Async file operations

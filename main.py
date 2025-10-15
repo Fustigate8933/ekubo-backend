@@ -25,3 +25,9 @@ app.include_router(songs_new.router, prefix="/api/songs", tags=["Songs"])
 app.include_router(lyrics.router, prefix="/api/lyrics", tags=["Lyrics"])
 app.include_router(matched.router, prefix="/api/matched", tags=["Matched Songs"])
 app.include_router(user_library.router, prefix="/api/library", tags=["User Library"])
+
+if __name__ == "__main__":
+    import os
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
